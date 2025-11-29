@@ -16,3 +16,9 @@ arch()->preset()->laravel();
 
 // Strict preset: Ensures strict types, final classes, and readonly classes
 // arch()->preset()->strict();
+
+
+// Custom arch test: Ensures all Enums in App\Enums are string backed for reliability
+arch('app')
+    ->expect('App\Enums')
+    ->toBeStringBackedEnums();
