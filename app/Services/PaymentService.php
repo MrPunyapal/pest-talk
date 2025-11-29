@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use Exception;
+use Illuminate\Support\Facades\Http;
 
 class PaymentService
 {
@@ -15,14 +16,16 @@ class PaymentService
      */
     public function charge(int $amount, string $currency = 'INR'): array
     {
-        // In reality, this calls Razorpay/Stripe API
-        // We NEVER want tests to hit this!
-
-        return [
-            'success' => true,
-            'transaction_id' => 'txn_'.uniqid(),
+        // Call the payment gateway API
+        $response = Http::post('https://api.razorpay.com/v1/payments', [
             'amount' => $amount,
             'currency' => $currency,
-        ];
+        ]);
+
+        if ($response->failed()) {
+            throw new Exception('Payment failed: '.$response->body());
+        }
+
+        return $response->json();
     }
 }
